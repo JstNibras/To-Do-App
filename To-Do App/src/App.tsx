@@ -1,15 +1,9 @@
 import './App.css'
-import Todo from './components/Todo'
+import TodoApp from './components/TodoApp';
+
 
 function App() {
-
-  return (
-    <div>
-      <h1>My Todo App</h1>
-      
-      <Todo />
-    </div>
-  )
+  return <TodoApp />;
 }
 
 export default App
