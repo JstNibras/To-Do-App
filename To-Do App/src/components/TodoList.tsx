@@ -1,22 +1,28 @@
 import TodoItem from "./TodoItem"
 
-interface Todo {
-    id: number;
-    title: string;
-    completed: boolean;
-}
-
-interface TodoListProps {
-    todos: Todo[];
-}
-
-function TodoList({ todos }: TodoListProps){
+function TodoList(){
     return (
-        <ul>
-            {todos.map(todo => (
-                <TodoItem key={todo.id} todo={todo} />
-            ))}
-        </ul>
+        <div className="todo-list">
+
+            <TodoItem
+                task="Learn JSX"
+                deadline="Today"
+                status="Pending"
+            />
+
+            <TodoItem
+                task="Practice Components"
+                deadline="Tomorrow"
+                status="Pending"
+            />
+
+            <TodoItem
+                task="Build Todo UI"
+                deadline="Friday"
+                status="Completed"
+            />
+
+        </div>
     )
 }
 
