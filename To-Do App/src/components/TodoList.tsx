@@ -1,27 +1,24 @@
 import TodoItem from "./TodoItem"
+import type { Todo } from "./TodoApp"
 
-function TodoList(){
+interface TodoListProps {
+    todos: Todo[];
+    onToggleTodo: (id: number) => void;
+}
+
+function TodoList({
+    todos,
+    onToggleTodo
+}: TodoListProps){
     return (
         <div className="todo-list">
-
-            <TodoItem
-                task="Learn JSX"
-                deadline="Today"
-                status="Pending"
-            />
-
-            <TodoItem
-                task="Practice Components"
-                deadline="Tomorrow"
-                status="Pending"
-            />
-
-            <TodoItem
-                task="Build Todo UI"
-                deadline="Friday"
-                status="Completed"
-            />
-
+            {todos.map(todo => (
+                <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={onToggleTodo}
+                />
+            ))}
         </div>
     )
 }
