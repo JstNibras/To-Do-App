@@ -1,31 +1,27 @@
+import type { Todo } from "./TodoApp";
+
 interface TodoItemProps {
-    task: string;
-    deadline: string;
-    status: string;
+    todo: Todo;
+    onToggle: (id: number) => void
 }
 
 function TodoItem({
-    task, deadline, status
+    todo, onToggle
 }: TodoItemProps) {
     return (
         <div className="todo-item">
 
-            <div className="task">
-                <h3>{task}</h3>
+            <div>
+                <h3>{todo.title}</h3>
+                <p>
+                    Status:{" "}
+                    {todo.completed ? "Completed" : "Pending"}
+                </p>
             </div>
 
-            <div className="deadline">
-                {deadline}
-            </div>
-
-            <div className="status">
-                {status}
-            </div>
-
-            <div className="actions">
-                <button>Edit</button>
-                <button>Delete</button>
-            </div>
+            <button onClick={() => onToggle(todo.id)}>
+                {todo.completed ? "Completed" : "Mark Complete"}
+            </button>
 
         </div> 
     )
