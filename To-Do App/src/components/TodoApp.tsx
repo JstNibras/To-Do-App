@@ -18,20 +18,33 @@ function TodoApp() {
     const addTodo = (title: string) => {
         const newTodo: Todo = {
             id: Date.now(),
-            title: title,
+            title,
             completed: false
         };
 
-    setTodos(prev => [...prev, newTodo]);
+        setTodos(prev => [...prev, newTodo]);
     };
+
+    const toggleTodo = (id: number) => {
+        setTodos(prev => 
+            prev.map(todo =>
+                todo.id === id
+                ? {
+                    ...todo,
+                    completed: !todo.completed
+                }
+                : todo
+            )
+        )
+    }
 
     return (
         <div className="todo-app">
             <Header />
 
-            <TodoForm />
+            <TodoForm onAddTodo={addTodo}/>
 
-            <TodoList />
+            <TodoList todos={todos} onToggleTodo={toggleTodo}/>
 
         </div>
     )
