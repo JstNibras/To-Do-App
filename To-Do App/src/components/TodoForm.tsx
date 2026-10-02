@@ -1,10 +1,42 @@
-function TodoForm(){
-    return (
-        <div className="toda-form">
-            <input type="text" placeholder="Enter a todo" />
+import { useState } from "react";
 
-            <button type="submit">Add Todo</button>
-        </div>
+interface TodoFormProps {
+    onAddTodo: (title: string) => void;
+}
+
+function TodoForm({onAddTodo}: TodoFormProps){
+
+    const [title, setTitle] = useState("")
+
+    const handleSubmit = (
+        event: React.FormEvent<HTMLFormElement>
+    ) => {
+        event.preventDefault();
+
+        const trimmedTitle = title.trim()
+
+        if(!trimmedTitle) {
+            return;
+        }
+
+        onAddTodo(trimmedTitle)
+
+        setTitle("")
+    }
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input 
+                type="text"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}    
+            />
+
+            <button type="submit">
+                Add Task
+            </button>
+
+        </form>
     )
 }
 
