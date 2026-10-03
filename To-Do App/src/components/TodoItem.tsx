@@ -2,18 +2,17 @@ import type { Todo } from "../types/todo";
 
 interface TodoItemProps {
     todo: Todo;
-    today: string;
+    onEdit: (todo: Todo) => void;
+    onDelete: (id: number) => void;
     onToggle: (id: number) => void;
 }
 
 function TodoItem({
     todo,
-    today,
+    onEdit,
+    onDelete,
     onToggle
 }: TodoItemProps) {
-
-    const overdue = !todo.completed && todo.deadline < today
-
     return (
         <div className="todo-item">
 
@@ -22,15 +21,19 @@ function TodoItem({
                 <p>Deadline: {todo.deadline}</p>
                 <p>
                     Status:{" "}
-                    {todo.completed ? "Completed" : overdue ? "Overdue" : "Pending"}
+                    {todo.completed ? "Completed" : "Pending"}
                 </p>
             </div>
 
-            <button onClick={() => onToggle(todo.id)}>
-                {todo.completed
-                ? "Completed"
-                : "Mark Complete"}
-            </button>
+            <div className="actions">
+                <button onClick={() => onToggle(todo.id)}>
+                    {todo.completed
+                    ? "Mark Pending"
+                    : "Complete"}
+                </button>
+                <button onClick={() => onEdit(todo)}>Edit</button>
+                <button onClick={() => onDelete(todo.id)}>Delete</button>
+            </div>
 
         </div> 
     )

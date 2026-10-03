@@ -7,42 +7,72 @@ import Header from "./Header";
 
 function TodoApp() {
 
-    const [todos, setTodos] = useState<Todo[]>(() => {
-        const savedTodos = localStorage.getItem("todos");
+    // const [todos, setTodos] = useState<Todo[]>(() => {
+    //     const savedTodos = localStorage.getItem("todos");
 
-        return savedTodos ? JSON.parse(savedTodos) : [];
-    });
+    //     return savedTodos ? JSON.parse(savedTodos) : [];
+    // });
 
-    const [today, setToday] = useState(() => {
-        return new Date().toISOString().split("T")[0]
-    })
+    // const [today, setToday] = useState(() => {
+    //     return new Date().toISOString().split("T")[0]
+    // })
 
-    useEffect(() => {
-        localStorage.setItem("todos", JSON.stringify(todos))
-    }, [todos])
+    // useEffect(() => {
+    //     localStorage.setItem("todos", JSON.stringify(todos))
+    // }, [todos])
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            setToday(new Date().toISOString().split("T")[0]);
-        }, 60 * 1000);
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         setToday(new Date().toISOString().split("T")[0]);
+    //     }, 60 * 1000);
 
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, []);
+    //     return () => {
+    //         clearInterval(intervalId);
+    //     };
+    // }, []);
 
-    const overdueTodos = todos.filter(
-        todo => !todo.completed && todo.deadline < today
-    )
+    // const overdueTodos = todos.filter(
+    //     todo => !todo.completed && todo.deadline < today
+    // )
 
-    const overdueCount = overdueTodos.length
+    // const overdueCount = overdueTodos.length
 
-    useEffect(() => {
-    document.title =
-        overdueCount > 0
-            ? `Todo App (${overdueCount} overdue)`
-            : "Todo App";
-    }, [overdueCount]);
+    // useEffect(() => {
+    // document.title =
+    //     overdueCount > 0
+    //         ? `Todo App (${overdueCount} overdue)`
+    //         : "Todo App";
+    // }, [overdueCount]);
+
+    // const addTodo = (
+    //     title: string,
+    //     deadline: string
+    // ) => {
+    //     const newTodo: Todo = {
+    //         id: Date.now(),
+    //         title,
+    //         deadline,
+    //         completed: false
+    //     }
+    //     setTodos(prev => [...prev, newTodo])
+    // }
+
+    // const toggleTodo = (id: number) => {
+    //     setTodos(prev =>
+    //     prev.map(todo =>
+    //         todo.id === id
+    //         ? {
+    //             ...todo,
+    //             completed: !todo.completed
+    //             }
+    //         : todo
+    //     )
+    //     );
+    // };
+
+    const [todos, setTodos] = useState<Todo[]>([])
+
+    const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
 
     const addTodo = (
         title: string,
@@ -57,18 +87,44 @@ function TodoApp() {
         setTodos(prev => [...prev, newTodo])
     }
 
+    const updateTodo = (
+        id: number,
+        title: string,
+        deadline: string
+    ) => {
+        setTodos(prev => 
+            prev.map(todo =>
+                todo.id === id
+                    ? {
+                        ...todo,
+                        title,
+                        deadline
+                    }
+                : todo
+            )
+        )
+        setEditingTodo(null)
+    }
+
+
+    const deleteTodo = (id: number) => {
+        setTodos(prev =>
+            prev.filter(todo => todo.id !== id)
+        )
+    }
+
     const toggleTodo = (id: number) => {
         setTodos(prev =>
-        prev.map(todo =>
-            todo.id === id
-            ? {
-                ...todo,
-                completed: !todo.completed
-                }
-            : todo
+            prev.map(todo =>
+                todo.id === id
+                    ? {
+                        ...todo,
+                        completed: !todo.completed
+                    }
+                : todo
+            )
         )
-        );
-    };
+    }
 
     return (
         <div className="todo-app">
@@ -76,14 +132,19 @@ function TodoApp() {
 
             <p>Total Tasks : {todos.length}</p>
 
-            <p>Overdue Tasks : {overdueCount}</p>
+            <TodoForm 
+                onAddTodo={addTodo}
+                onUpdateTodo={updateTodo}
+                editingTodo={editingTodo}
+                onCancelEdit={() => setEditingTodo(null)}
+            />
 
-            <TodoForm onAddTodo={addTodo}/>
-
-            <TodoList 
+            <TodoList
                 todos={todos}
-                today={today}
-                onToggleTodo={toggleTodo} />
+                onEdit={setEditingTodo}
+                onDelete={deleteTodo}
+                onToggle={toggleTodo}
+            />
 
         </div>
     )
