@@ -1,50 +1,55 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import TodoForm from "./TodoForm"
 import TodoList from "./TodoList"
+import type { Todo } from "../types/todo"
 import Header from "./Header";
-
-export interface Todo {
-    id: number;
-    title: string;
-    // deadline: string;
-    completed: boolean;
-}
 
 function TodoApp() {
 
-    const [todos, setTodos] = useState<Todo[]>([]);
+    const [todos, setTodos] = useState<Todo[]>(() => {
+        const savedTodos = localStorage.getItem("todos");
 
-    const addTodo = (title: string) => {
-        const newTodo: Todo = {
-            id: Date.now(),
-            title,
-            completed: false
-        };
+        return savedTodos ? JSON.parse(savedTodos) : [];
+    });
 
-        setTodos(prev => [...prev, newTodo]);
-    };
+    const [today, setToday] = useState(() => {
+        return new Date().toISOString().split("T")[0]
+    })
 
-    const toggleTodo = (id: number) => {
-        setTodos(prev => 
-            prev.map(todo =>
-                todo.id === id
-                ? {
-                    ...todo,
-                    completed: !todo.completed
-                }
-                : todo
-            )
-        )
-    }
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos))
+    }, [todos])
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setToday(new Date().toISOString().split("T")[0]
+        }, 60 * 1000)
+
+        return () => {
+            clearInterval(intervalId)
+        }
+    }, [])
+
+    const overdueTodos = todos.filter(
+        todo => !todo.completed && todo.deadline < today
+    )
+
+    const overdueCount = overdueTodos.length
+
+    useEffect(() => {
+        document.title = `Todo App (${overdueCount} overdue)`
+    })
 
     return (
         <div className="todo-app">
             <Header />
 
-            <TodoForm onAddTodo={addTodo}/>
+            <p>Overdue Tasks : {overdueCount}</p>
 
-            <TodoList todos={todos} onToggleTodo={toggleTodo}/>
+            <TodoForm />
+
+            <TodoList todos={todos} />
 
         </div>
     )
