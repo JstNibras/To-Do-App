@@ -6,13 +6,15 @@ interface TodoListProps {
     onEdit: (todo: Todo) => void;
     onDelete: (id: number) => void;
     onToggle: (id: number) => void;
+    currentTime: Date;
 }
 
 function TodoList({
     todos,
     onEdit,
     onDelete,
-    onToggle
+    onToggle,
+    currentTime
 }: TodoListProps){
     return (
         <div className="todo-list">
@@ -23,6 +25,7 @@ function TodoList({
                     onEdit={onEdit}
                     onDelete={onDelete}
                     onToggle={onToggle}
+                    currentTime={currentTime}
                 />
             ))}
         </div>

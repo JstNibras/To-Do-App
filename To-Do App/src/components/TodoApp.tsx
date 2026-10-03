@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { toast } from "react-toastify";
 
 import TodoForm from "./TodoForm"
 import TodoList from "./TodoList"
@@ -7,72 +9,36 @@ import Header from "./Header";
 
 function TodoApp() {
 
-    // const [todos, setTodos] = useState<Todo[]>(() => {
-    //     const savedTodos = localStorage.getItem("todos");
-
-    //     return savedTodos ? JSON.parse(savedTodos) : [];
-    // });
-
-    // const [today, setToday] = useState(() => {
-    //     return new Date().toISOString().split("T")[0]
-    // })
-
-    // useEffect(() => {
-    //     localStorage.setItem("todos", JSON.stringify(todos))
-    // }, [todos])
-
-    // useEffect(() => {
-    //     const intervalId = setInterval(() => {
-    //         setToday(new Date().toISOString().split("T")[0]);
-    //     }, 60 * 1000);
-
-    //     return () => {
-    //         clearInterval(intervalId);
-    //     };
-    // }, []);
-
-    // const overdueTodos = todos.filter(
-    //     todo => !todo.completed && todo.deadline < today
-    // )
-
-    // const overdueCount = overdueTodos.length
-
-    // useEffect(() => {
-    // document.title =
-    //     overdueCount > 0
-    //         ? `Todo App (${overdueCount} overdue)`
-    //         : "Todo App";
-    // }, [overdueCount]);
-
-    // const addTodo = (
-    //     title: string,
-    //     deadline: string
-    // ) => {
-    //     const newTodo: Todo = {
-    //         id: Date.now(),
-    //         title,
-    //         deadline,
-    //         completed: false
-    //     }
-    //     setTodos(prev => [...prev, newTodo])
-    // }
-
-    // const toggleTodo = (id: number) => {
-    //     setTodos(prev =>
-    //     prev.map(todo =>
-    //         todo.id === id
-    //         ? {
-    //             ...todo,
-    //             completed: !todo.completed
-    //             }
-    //         : todo
-    //     )
-    //     );
-    // };
-
     const [todos, setTodos] = useState<Todo[]>([])
 
     const [editingTodo, setEditingTodo] = useState<Todo | null>(null)
+
+    const [currentTime, setCurrentTime] = useState(() => new Date())
+
+    const notifiedOverdueIds = useRef<Set<number>>(new Set())
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setCurrentTime(new Date())
+        }, 1000)
+        return () => {
+            clearInterval(intervalId)
+        }
+    }, [])
+
+    useEffect(() => {
+        todos.forEach(todo => {
+            const deadlineTime = new Date(todo.deadline).getTime();
+
+            const isOverdue = !todo.completed && currentTime.getTime() > deadlineTime
+
+            if(isOverdue && !notifiedOverdueIds.current.has(todo.id)){
+                toast.warning(`"${todo.title}" is overdue`)
+            }
+
+            notifiedOverdueIds.current.add(todo.id)
+        })
+    }, [todos, currentTime])
 
     const addTodo = (
         title: string,
@@ -103,6 +69,7 @@ function TodoApp() {
                 : todo
             )
         )
+        notifiedOverdueIds.current.delete(id)
         setEditingTodo(null)
     }
 
@@ -111,6 +78,7 @@ function TodoApp() {
         setTodos(prev =>
             prev.filter(todo => todo.id !== id)
         )
+        notifiedOverdueIds.current.delete(id)
     }
 
     const toggleTodo = (id: number) => {
@@ -144,6 +112,7 @@ function TodoApp() {
                 onEdit={setEditingTodo}
                 onDelete={deleteTodo}
                 onToggle={toggleTodo}
+                currentTime={currentTime}
             />
 
         </div>

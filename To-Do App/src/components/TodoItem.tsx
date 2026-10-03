@@ -5,14 +5,19 @@ interface TodoItemProps {
     onEdit: (todo: Todo) => void;
     onDelete: (id: number) => void;
     onToggle: (id: number) => void;
+    currentTime: Date;
 }
 
 function TodoItem({
     todo,
     onEdit,
     onDelete,
-    onToggle
+    onToggle,
+    currentTime
 }: TodoItemProps) {
+
+    const isOverdue = !todo.completed && currentTime.getTime() > new Date(todo.deadline).getTime()
+        
     return (
         <div className="todo-item">
 
@@ -21,7 +26,7 @@ function TodoItem({
                 <p>Deadline: {todo.deadline}</p>
                 <p>
                     Status:{" "}
-                    {todo.completed ? "Completed" : "Pending"}
+                    {todo.completed ? "Completed" : isOverdue ? "Overdue" : "Pending"}
                 </p>
             </div>
 
