@@ -41,13 +41,26 @@ function TodoApp() {
         document.title = `Todo App (${overdueCount} overdue)`
     })
 
+    const addTodo = (
+        title: string,
+        deadline: string
+    ) => {
+        const newTodo: Todo = {
+            id: Date.now(),
+            title,
+            deadline,
+            completed: false
+        }
+        setTodos(prev => [...prev, newTodo])
+    }
+
     return (
         <div className="todo-app">
             <Header />
 
             <p>Overdue Tasks : {overdueCount}</p>
 
-            <TodoForm />
+            <TodoForm onAddTodo={addTodo}/>
 
             <TodoList todos={todos} />
 

@@ -1,12 +1,16 @@
 import { useState } from "react";
 
 interface TodoFormProps {
-    onAddTodo: (title: string) => void;
+    onAddTodo: (
+        title: string,
+        deadline: string
+    ) => void;
 }
 
 function TodoForm({onAddTodo}: TodoFormProps){
 
     const [title, setTitle] = useState("")
+    const [deadline, setDeadline] = useState("")
 
     const handleSubmit = (
         event: React.FormEvent<HTMLFormElement>
@@ -15,13 +19,14 @@ function TodoForm({onAddTodo}: TodoFormProps){
 
         const trimmedTitle = title.trim()
 
-        if(!trimmedTitle) {
+        if(!trimmedTitle || !deadline) {
             return;
         }
 
-        onAddTodo(trimmedTitle)
+        onAddTodo(trimmedTitle, deadline)
 
         setTitle("")
+        setDeadline("")
     }
 
     return (
@@ -29,7 +34,14 @@ function TodoForm({onAddTodo}: TodoFormProps){
             <input 
                 type="text"
                 value={title}
-                onChange={(event) => setTitle(event.target.value)}    
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="Enter task"    
+            />
+
+            <input 
+                type="date"
+                value={deadline}
+                onChange={event => setDeadline(event.target.value)}
             />
 
             <button type="submit">
