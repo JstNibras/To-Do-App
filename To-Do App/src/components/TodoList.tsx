@@ -3,10 +3,14 @@ import type { Todo } from "../types/todo"
 
 interface TodoListProps {
     todos: Todo[];
+    today: string;
+    onToggleTodo: (id: number) => void;
 }
 
 function TodoList({
     todos,
+    today,
+    onToggleTodo
 }: TodoListProps){
     return (
         <div className="todo-list">
@@ -14,6 +18,8 @@ function TodoList({
                 <TodoItem
                     key={todo.id}
                     todo={todo}
+                    today={today}
+                    onToggle={onToggleTodo}
                 />
             ))}
         </div>

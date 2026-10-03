@@ -23,13 +23,13 @@ function TodoApp() {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            setToday(new Date().toISOString().split("T")[0]
-        }, 60 * 1000)
+            setToday(new Date().toISOString().split("T")[0]);
+        }, 60 * 1000);
 
         return () => {
-            clearInterval(intervalId)
-        }
-    }, [])
+            clearInterval(intervalId);
+        };
+    }, []);
 
     const overdueTodos = todos.filter(
         todo => !todo.completed && todo.deadline < today
@@ -38,8 +38,11 @@ function TodoApp() {
     const overdueCount = overdueTodos.length
 
     useEffect(() => {
-        document.title = `Todo App (${overdueCount} overdue)`
-    })
+    document.title =
+        overdueCount > 0
+            ? `Todo App (${overdueCount} overdue)`
+            : "Todo App";
+    }, [overdueCount]);
 
     const addTodo = (
         title: string,
@@ -54,15 +57,33 @@ function TodoApp() {
         setTodos(prev => [...prev, newTodo])
     }
 
+    const toggleTodo = (id: number) => {
+        setTodos(prev =>
+        prev.map(todo =>
+            todo.id === id
+            ? {
+                ...todo,
+                completed: !todo.completed
+                }
+            : todo
+        )
+        );
+    };
+
     return (
         <div className="todo-app">
             <Header />
+
+            <p>Total Tasks : {todos.length}</p>
 
             <p>Overdue Tasks : {overdueCount}</p>
 
             <TodoForm onAddTodo={addTodo}/>
 
-            <TodoList todos={todos} />
+            <TodoList 
+                todos={todos}
+                today={today}
+                onToggleTodo={toggleTodo} />
 
         </div>
     )
